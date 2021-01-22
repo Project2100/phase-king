@@ -1,0 +1,4 @@
+FROM openjdk:15
+COPY ./Coordinator.java /usr/src/myapp/Coordinator.java
+WORKDIR /usr/src/myapp
+RUN javac -Xlint Coordinator.java

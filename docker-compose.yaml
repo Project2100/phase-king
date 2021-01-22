@@ -1,0 +1,45 @@
+version: "3"
+
+services:
+
+  monitor:
+    build:
+      context: .
+      dockerfile: Dockerfile_monitor
+    image: protomon
+    command: java Monitor -n ${NODE_COUNT} -p ${PORT} -c "${COMPOSE_PROJECT_NAME}_${COORDINATOR_NAME}_1.${COMPOSE_PROJECT_NAME}_pk_net"
+    networks: 
+      - pk_net
+    expose:
+      - ${PORT}
+    depends_on:
+      - coordinator
+
+  coordinator:
+    build:
+      context: .
+      dockerfile: Dockerfile_coordinator
+    image: protocoord
+    command: java Coordinator -n ${NODE_COUNT} -p ${PORT} -s ${NUM_SESSIONS}
+    networks: 
+      - pk_net
+    expose:
+      - ${PORT}
+    hostname: ${COORDINATOR_NAME}
+
+  node:
+    build:
+      context: .
+      dockerfile: Dockerfile_node
+    image: protonode
+    command: java Node -n ${NODE_COUNT} -p ${PORT} -c "${COMPOSE_PROJECT_NAME}_${COORDINATOR_NAME}_1.${COMPOSE_PROJECT_NAME}_pk_net" -v
+    networks: 
+      - pk_net
+    expose:
+      - ${PORT}
+    scale: ${NODE_COUNT}
+    depends_on:
+      - coordinator
+
+networks:
+  pk_net:

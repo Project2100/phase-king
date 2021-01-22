@@ -1,0 +1,4 @@
+FROM openjdk:15
+COPY ./Node.java /usr/src/myapp/Node.java
+WORKDIR /usr/src/myapp
+RUN javac -Xlint Node.java
