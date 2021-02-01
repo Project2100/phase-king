@@ -2,19 +2,6 @@ version: "3"
 
 services:
 
-  monitor:
-    build:
-      context: .
-      dockerfile: Dockerfile_monitor
-    image: protomon
-    command: java Monitor -n ${NODE_COUNT} -p ${PORT} -c "${COMPOSE_PROJECT_NAME}_${COORDINATOR_NAME}_1.${COMPOSE_PROJECT_NAME}_pk_net"
-    networks: 
-      - pk_net
-    expose:
-      - ${PORT}
-    depends_on:
-      - coordinator
-
   coordinator:
     build:
       context: .

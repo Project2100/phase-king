@@ -120,22 +120,16 @@ public class Coordinator {
         
         // Open a listening socket, and connect to all the nodes for the session, and the monitor
         nodes = new Socket[nodeCount];
-        try ( ServerSocket listener = new ServerSocket(port, nodeCount, InetAddress.getLocalHost())) {
-            for (int i = 0; i < nodeCount + 1; i++) {
+        try (ServerSocket listener = new ServerSocket(port, nodeCount, InetAddress.getLocalHost())) {
+            for (int i = 0; i < nodeCount; i++) {
                 // Add the connection to the list, assign a unique identifier for the node to use
                 // Blocking call
                 Socket sock = listener.accept();
                 System.out.println("Matching " + sock.getInetAddress().getHostName());
                 Matcher m = NODE_HOSTNAME_ID.matcher(sock.getInetAddress().getHostName());
-                if (m.find()) {
-                    // It is indeed a node
-                    int id = Integer.valueOf(m.group(1));
-                    nodes[id - 1] = sock;
-                }
-                else {
-                    // It actually is the monitor
-                    monitor = sock;
-                }
+                m.find();
+                int id = Integer.valueOf(m.group(1));
+                nodes[id - 1] = sock;
             }
 
             // This should be useless once I figure out how to get a hostname from inside the node
@@ -201,8 +195,6 @@ public class Coordinator {
             node.getOutputStream().write(255);
             node.close();
         }
-        
-        monitor.close();
 
     }
 }

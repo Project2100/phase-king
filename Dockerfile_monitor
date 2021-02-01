@@ -1,4 +1,0 @@
-FROM openjdk:15
-COPY ./Monitor.java /usr/src/myapp/Monitor.java
-WORKDIR /usr/src/myapp
-RUN javac -Xlint Monitor.java
