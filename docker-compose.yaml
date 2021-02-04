@@ -19,7 +19,7 @@ services:
       context: .
       dockerfile: Dockerfile_node
     image: protonode
-    command: java Node -n ${NODE_COUNT} -p ${PORT} -c "${COMPOSE_PROJECT_NAME}_${COORDINATOR_NAME}_1.${COMPOSE_PROJECT_NAME}_pk_net" -v
+    command: java Node -n ${NODE_COUNT} -p ${PORT} -c "${COMPOSE_PROJECT_NAME}_${COORDINATOR_NAME}_1.${COMPOSE_PROJECT_NAME}_pk_net"
     networks: 
       - pk_net
     expose:

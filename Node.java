@@ -48,7 +48,7 @@ public class Node {
     
     private static Socket[] peers;
     
-    private static boolean verbose = true;
+    private static boolean verbose = false;
     
     
     /**
@@ -100,7 +100,7 @@ public class Node {
                 else port = Integer.valueOf(args[i]);
             }
             case "-v" -> {
-                verbose = false;
+                verbose = true;
             }
             default -> throw new RuntimeException("Unrecognized option: " + args[i]);
         }
@@ -126,8 +126,8 @@ public class Node {
         // Connect to the coordinator
         int retries = 0;
         while (true) try {
-            // This call is blocking, or else it throws
-            // Also, the ID isn't received until all other peers connect to the coordinator
+            // This call is blocking, can also throw (e.g.: the server hasn't opened its listening socket yet)
+            // ID is received only when all other peers do connect to the coordinator
             coordinator = new Socket(InetAddress.getByName(coordName), port);
             identifier = coordinator.getInputStream().read();
             break;
@@ -139,7 +139,7 @@ public class Node {
                 // Best known way to handle the containers' concurrent startup, for now... "depends_on" option isn't a sure-fire solution, but helps a lot
                 Thread.sleep(2000);
             }
-            else throw ex;
+            else throw new RuntimeException("Failed connecting after " + retries + " retries. Quitting...", ex);
         }
 
         
@@ -155,7 +155,7 @@ public class Node {
                 peers[i] = new Socket(InetAddress.getByName("phaseking_node_" + (i + 1) + ".phaseking_pk_net"), port);
 
             }
-            else listener.close(); // Essentially, the listener is done here
+            else listener.close(); // Essentially, at this point the listener is done
         }
 
 

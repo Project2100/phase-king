@@ -118,7 +118,7 @@ public class Coordinator {
 
 
         
-        // Open a listening socket, and connect to all the nodes for the session, and the monitor
+        // Open a listening socket, and connect to all the nodes
         nodes = new Socket[nodeCount];
         try (ServerSocket listener = new ServerSocket(port, nodeCount, InetAddress.getLocalHost())) {
             for (int i = 0; i < nodeCount; i++) {
@@ -148,8 +148,6 @@ public class Coordinator {
         for (int ses = 0; ses < numSessions; ses++) {
             System.out.println("Starting session " + (ses + 1));
 
-            // Pick the byzantines - or equivalently, the eventual PK which will be honest
-            //int honestPKNode = RNG.nextInt(phaseCount);
 
             // Pick some nodes that will act randomly
             List<Integer> a = IntStream.range(0, nodeCount).mapToObj(Integer::valueOf).collect(Collectors.toList());
