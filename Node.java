@@ -1,4 +1,3 @@
-
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
@@ -44,6 +43,9 @@ public class Node {
      */
     private static int phaseCount;
     
+    /**
+     * The communication channels with the coordinator
+     */
     private static Socket coordinator;
     
     private static Socket[] peers;
@@ -120,6 +122,8 @@ public class Node {
         
         
         // Open a listening socket for the group
+        // Working under the assumption that all peers won't fail during the connection phase
+        @SuppressWarnings({"resource"})
         ServerSocket listener = new ServerSocket(port, nodeCount - 1, InetAddress.getLocalHost());
         
         
@@ -142,8 +146,8 @@ public class Node {
             else throw new RuntimeException("Failed connecting after " + retries + " retries. Quitting...", ex);
         }
 
-        
-        // Connect to the peers
+        // CONNECTION PHASE
+        // IMPORTANT: At this point, every node is guaranteed to have opened a listening socket, because the coordinator acted as a barrier beforehand
         // If the node's ID is below the index, it listens, if it's above, it connects
         int nodeIndex = identifier - 1;
         peers = new Socket[nodeCount];
@@ -164,28 +168,27 @@ public class Node {
         sync(210);
         
 
-        // From now on, node will receive commands from coordinator
-        // The value received will tell the behaviour for this node:
+        // From now on, this node's behaviour will be entirely regulated by the control values supplied by the coordinator:
+        // 0: honest
         // 1: random
-        // 255: terminate
-        // defautl: honest
+        // *: terminate
         while (true) switch (coordinator.getInputStream().read()) {
+            case 0 -> {
+                if (verbose) System.out.println("I'm honest");
+                coordinator.getOutputStream().write(beHonest() ? 1 : 0);
+            }
             case 1 -> {
                 if (verbose) System.out.println("I'm random");
                 beRandom();
                 coordinator.getOutputStream().write(2);
             }
-            case 255 -> {
+            default -> {
                 for (int i = 0; i < peers.length; i++) {
                     if (i == identifier - 1) continue;
                     peers[i].close();
                 }
                 coordinator.close();
                 return;
-            }
-            default -> {
-                if (verbose) System.out.println("I'm honest");
-                coordinator.getOutputStream().write(beHonest() ? 1 : 0);
             }
         }
 

@@ -1,5 +1,12 @@
 version: "3"
 
+# Options:
+
+# -n : number of nodes
+# -p : port used by all containers to communicate
+# -c : [NODE] the coordinator hostname
+# -s : [COORD] statistical model checking parameters: probability of success as a percentage, confidence interval
+
 services:
 
   coordinator:
@@ -7,7 +14,7 @@ services:
       context: .
       dockerfile: Dockerfile_coordinator
     image: protocoord
-    command: java Coordinator -n ${NODE_COUNT} -p ${PORT} -s ${NUM_SESSIONS}
+    command: java Coordinator -n ${NODE_COUNT} -p ${PORT} -s ${PERC_SUCCESS} ${CONFIDENCE}
     networks: 
       - pk_net
     expose:
