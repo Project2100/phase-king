@@ -1,0 +1,11 @@
+*               text=auto
+
+*.tex           text diff=tex
+*.md            text diff=markdown
+*.java          text diff=java
+
+Dockerfile_*    text
+*.yaml          text
+
+.gitattributes  export-ignore
+.gitignore      export-ignore
