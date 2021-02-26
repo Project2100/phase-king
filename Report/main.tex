@@ -39,7 +39,7 @@
 
     \subsection{Statistical model checking}
 
-    To model a system's successes and failures at a most coarse and generalized level, Bernoulli random variables can be used. Let $S$ be such variable, and say that $S = 1$ expresses that the system has failed, and $S = 0$ otherwise. Since it is unknown how likely the system will fail \emph{a priori}, a tentative estimate for the probability of failure is defined in $\varepsilon$; the goal then becames to prove that a system failure occurs with no more probability than $\varepsilon$:
+    To model a system's successes and failures at a most coarse and generalized level, Bernoulli random variables can be used. Let $S$ be such variable, and say that $S = 1$ expresses that the system has failed, and $S = 0$ otherwise. Since it is unknown how likely the system will fail \emph{a priori}, a tentative estimate for the probability of failure is defined in $\varepsilon$; the goal then becomes to prove that a system failure occurs with no more probability than $\varepsilon$:
 
     \[
         \Pr[S = 1] < \varepsilon
@@ -52,7 +52,7 @@
     \]
 
     % \footnote{In the PhaseKing case, no relationship is present across single runs, therefore the runs' results are independent of each other. In a general case, the system state across runs does factor in choosing an input that maximizes failure probability}
-    This last statement will be the \emph{hyphothesis} that this model checking method will want to disprove. The main idea is to run the system multiple times, each time with random independent inputs, until either a failure is encountered, or a run count $N$ established beforehand is reached. The multiple runs do make for a geometric random variable $X$ grounded on the original variable $S$, which represents how many runs are needed before the system fails.
+    This last statement will be the \emph{hypothesis} that this model checking method will want to disprove. The main idea is to run the system multiple times, each time with random independent inputs, until either a failure is encountered, or a run count $N$ established beforehand is reached. The multiple runs do make for a geometric random variable $X$ grounded on the original variable $S$, which represents how many runs are needed before the system fails.
 
     Going further with the failure hunting mindset, the method ideally aims to disprove that a failure is guaranteed to happen in the $N$ runs:
     
@@ -127,7 +127,7 @@
 
     The protocol implementation follows closely the definition in \cite{kshe08},\footnote{\linkicon \href
     {http://wwwusers.di.uniroma1.it/~stefa/Distributed_Systems/Schedule_files/consensus.pdf}
-    {\textsf{``Consensus --- Distributed Systems course material, La Sapeinza''}}} of which a sketch for node behviour is reported here:
+    {\textsf{``Consensus --- Distributed Systems course material, La Sapienza''}}} of which a sketch for node behaviour is reported here:
 
     \begin{enumerate}
         \item The node is assigned a unique identifier $i$ from the range $(1, n)$, where $n$ is the number of nodes;
@@ -158,14 +158,14 @@
         \item Ensuring that all nodes are connected;
         \item Deciding the behaviour for each node, either honest or byzantine;
         \item Synchronizing the nodes' status and phases;
-        \item Enforcing statistical model checking on the protocol implemetation, and reporting the results.
+        \item Enforcing statistical model checking on the protocol implementation, and reporting the results.
     \end{itemize}
 
     When launched, the coordinator will compute the number of runs required to enforce hypothesis testing, and when finished, will report whether the process has been successful or not. Other than that, the coordinator does not partake in the Phase-King protocol in any way. 
 
     \pagebreak
 
-    \section{Results}
+    \section{Results and the future}
 
     The software has been run with varying values for the number of nodes, lower bound for probability of success, and confidence factor, with the results shown in table \ref{table:results}. Each check also reports the number of tests performed in order to enforce the thesis of hypothesis testing.
 
@@ -173,17 +173,30 @@
         \caption{Model checking results}
         \centering
         \vbox{}
-        \begin{tabular}{c|cc|c}
+        \begin{tabular}{cc|cc|c}
             \hline\hline\noalign{\smallskip}
-            \# Nodes & \shortstack[c]{Success \\ guarantee} & \shortstack[c]{Confidence \\ factor} & \shortstack[c]{Outcome \\ (\# Tests)} \\[0.5ex]
+            \# Nodes & \shortstack[c]{Phases per \\ session} & \shortstack[c]{Success \\ guarantee} & \shortstack[c]{Confidence \\ factor} & \shortstack[c]{Outcome \\ (\# Tests)} \\[0.5ex]
             \hline\noalign{\smallskip}
-            10 & 99\% & 0.001 & \checkmark(688) \\
-            10 & 99\% & 0.0001 & \checkmark(917) \\
-            10 & 99.9\% & 0.001 & \checkmark(6905) \\[1ex]
+            10 & 2  & 99\% & 0.001 & \checkmark(688) \\
+            -- & -- & 99\% & 0.0001 & \checkmark(917) \\
+            -- & -- & 99.9\% & 0.001 & \checkmark(6905) \\
+            -- & -- & 99.9\% & 0.0001 & \checkmark(9206) \\
+            15 & 3  & 99\% & 0.001 & \checkmark(688) \\
+            -- & -- & 99\% & 0.0001 & \checkmark(917) \\
+            -- & -- & 99.9\% & 0.001 & \checkmark(6905) \\
+            -- & -- & 99.9\% & 0.0001 & \checkmark(9206) \\
+            30 & 7  & 99\% & 0.001 & \checkmark(688) \\
+            -- & -- & 99\% & 0.0001 & \checkmark(917) \\
+            -- & -- & 99.9\% & 0.001 & \checkmark(6905) \\
+            -- & -- & 99.9\% & 0.0001 & \checkmark(9206) \\[1ex]
             \hline
         \end{tabular}
         \label{table:results}
     \end{table}
+
+    So far, all tests are passed successfully, including the last and most demanding test one, which guarantees that a network of 30 nodes reaches consensus with a reliability of 99.9\% and a confidence factor of $10^{-4}$.
+    
+    Tests with stricter parameters have not been performed due to current technical limitations, and the assumption that these results are good enough as is. With more computational power, and the use of Docker's swarm functionality, it is expected that the parameters can be brought to extreme values, while still guaranteeing the software's correctness.
 
 
     \begin{thebibliography}{9}
